@@ -2,4 +2,16 @@
 
 [![Build Status](https://travis-ci.org/krakjoe/kore.svg?branch=master)](https://travis-ci.org/krakjoe/kore)
 
-kore php functions
+```php
+/**
+* Shall return array of arguments passed to calling function
+*
+* @param <callable> shall be called to format the name of each argument
+*/
+function func_get_named_args([callable format]) : array;
+
+/**
+* Shall return the return type of calling function
+*/
+function func_get_return_type() : ?string;
+```

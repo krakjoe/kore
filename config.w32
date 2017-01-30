@@ -1,0 +1,9 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("kore", "enable kore support", "no");
+
+if (PHP_KORE != "no") {
+	EXTENSION("kore", "kore.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+}
+

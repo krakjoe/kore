@@ -58,7 +58,7 @@ PHP_FUNCTION(func_get_named_args)
 		return;
 	}
 
-	while (arg < end) {
+	while (arg < end && info) {
 		if (ZEND_NUM_ARGS()) {
 			zval name, rv;
 

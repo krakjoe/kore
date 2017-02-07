@@ -24,7 +24,7 @@
 extern zend_module_entry kore_module_entry;
 #define phpext_kore_ptr &kore_module_entry
 
-#define PHP_KORE_VERSION "0.0.1"
+#define PHP_KORE_VERSION "0.0.2"
 
 #ifdef PHP_WIN32
 #	define PHP_KORE_API __declspec(dllexport)

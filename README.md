@@ -14,4 +14,9 @@ function func_get_named_args([callable format]) : array;
 * Shall return the return type of calling function
 */
 function func_get_return_type() : ?string;
+
+/**
+* Shall return get_properties output, unmangled, something like pre debugInfo
+*/
+function object_dump(object $object) : array;
 ```

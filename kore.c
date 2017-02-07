@@ -133,6 +133,67 @@ PHP_FUNCTION(func_get_return_type)
 #endif
 } /* }}} */
 
+#if PHP_VERSION_ID >= 70200
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(object_dump_info, 0, 0, IS_ARRAY, 1)
+#else
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(object_dump_info, 0, 0, IS_ARRAY, NULL, 1)
+#endif
+	ZEND_ARG_TYPE_INFO(0, object, IS_OBJECT, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ proto array object_dump(object $object) */
+PHP_FUNCTION(object_dump)
+{
+	zval *object = NULL, *v = NULL;
+	HashTable *table, *ht;
+	zend_string *k = NULL;
+
+	if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "o", &object) != SUCCESS) {
+		return;
+	}
+
+	if (!Z_OBJ_HANDLER_P(object, get_properties)) {
+		return;
+	}
+
+	table = Z_OBJ_HANDLER_P(object, get_properties)(object);
+	
+	if (!table) {
+		return;
+	}
+
+	array_init(return_value);
+
+	ZEND_HASH_FOREACH_STR_KEY_VAL(table, k, v) {
+		const char *class_name, 
+					*prop_name;
+		zend_long    class_name_len,
+					 prop_name_len;
+
+		zend_unmangle_property_name_ex(k, &class_name, &prop_name, &prop_name_len);
+
+		if (class_name) {
+			if (class_name[0] == '*') {
+				if (zend_hash_str_add(Z_ARRVAL_P(return_value), prop_name, prop_name_len, v)) {
+					Z_TRY_ADDREF_P(v);
+				}
+			} else {
+				zend_string *pk = zend_strpprintf(0, "%s::%s", class_name, prop_name);
+
+				if (zend_hash_add(Z_ARRVAL_P(return_value), pk, v)) {
+					Z_TRY_ADDREF_P(v);
+				}
+
+				zend_string_release(pk);
+			}
+		} else {
+			if (zend_hash_add(Z_ARRVAL_P(return_value), k, v)) {
+				Z_TRY_ADDREF_P(v);
+			}
+		}
+	} ZEND_HASH_FOREACH_END();
+} /* }}} */
+
 /* {{{ PHP_RINIT_FUNCTION
  */
 PHP_RINIT_FUNCTION(kore)
@@ -159,6 +220,8 @@ PHP_MINFO_FUNCTION(kore)
 const zend_function_entry kore_functions[] = {
 	PHP_FE(func_get_named_args,		func_get_named_args_info)
 	PHP_FE(func_get_return_type,	func_get_return_type_info)
+
+	PHP_FE(object_dump,             object_dump_info)
 	PHP_FE_END
 };
 /* }}} */

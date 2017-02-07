@@ -178,7 +178,7 @@ PHP_FUNCTION(object_dump)
 					Z_TRY_ADDREF_P(v);
 				}
 			} else {
-				zend_string *pk = zend_strpprintf(0, "%s::%s", class_name, prop_name);
+				zend_string *pk = strpprintf(0, "%s::%s", class_name, prop_name);
 
 				if (zend_hash_add(Z_ARRVAL_P(return_value), pk, v)) {
 					Z_TRY_ADDREF_P(v);

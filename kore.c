@@ -85,7 +85,11 @@ PHP_FUNCTION(func_get_named_args)
 			}
 		}
 
+#if PHP_VERSION_ID >= 80000
+		if (ZEND_ARG_IS_VARADIC(info)) {
+#else
 		if (info->is_variadic) {
+#endif			
 			break;
 		}
 
@@ -117,8 +121,29 @@ PHP_FUNCTION(func_get_return_type)
 	}
 	
 	info = frame->func->common.arg_info - 1;
-
-#if PHP_VERSION_ID >= 70200
+#if PHP_VERSION_ID >= 80000
+	if (ZEND_TYPE_HAS_ONLY_MASK(info->type)) {
+		switch (ZEND_TYPE_PURE_MASK(info->type)) {
+			
+			case MAY_BY_STRING:
+				RETURN_STRING(zend_get_type_by_const(IS_STRING));
+			case MAY_BE_LONG:
+				RETURN_STRING(zend_get_type_by_const(IS_LONG));
+			case MAY_BE_DOUBLE:
+				RETURN_STRING(zend_get_type_by_const(IS_DOUBLE));
+			case MAY_BE_ARRAY:
+				RETURN_STRING(zend_get_type_by_const(IS_ARRAY));
+			case MAY_BE_NULL:
+				RETURN_STRING("void");
+			
+			default:
+				return;
+		}
+		
+	}
+	
+	RETURN_STR_COPY(ZEND_TYPE_NAME(info->type));
+#elif PHP_VERSION_ID >= 70200
 	if (!ZEND_TYPE_IS_CLASS(info->type)) {
 		RETURN_STRING(zend_get_type_by_const(ZEND_TYPE_CODE(info->type)));
 	}

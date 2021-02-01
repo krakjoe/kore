@@ -86,7 +86,7 @@ PHP_FUNCTION(func_get_named_args)
 		}
 
 #if PHP_VERSION_ID >= 80000
-		if (ZEND_ARG_IS_VARADIC(info)) {
+		if (ZEND_ARG_IS_VARIADIC(info)) {
 #else
 		if (info->is_variadic) {
 #endif			
@@ -122,10 +122,10 @@ PHP_FUNCTION(func_get_return_type)
 	
 	info = frame->func->common.arg_info - 1;
 #if PHP_VERSION_ID >= 80000
-	if (ZEND_TYPE_HAS_ONLY_MASK(info->type)) {
+	if (ZEND_TYPE_IS_ONLY_MASK(info->type)) {
 		switch (ZEND_TYPE_PURE_MASK(info->type)) {
 			
-			case MAY_BY_STRING:
+			case MAY_BE_STR:
 				RETURN_STRING(zend_get_type_by_const(IS_STRING));
 			case MAY_BE_LONG:
 				RETURN_STRING(zend_get_type_by_const(IS_LONG));
@@ -141,7 +141,7 @@ PHP_FUNCTION(func_get_return_type)
 		}
 		
 	}
-	
+1
 	RETURN_STR_COPY(ZEND_TYPE_NAME(info->type));
 #elif PHP_VERSION_ID >= 70200
 	if (!ZEND_TYPE_IS_CLASS(info->type)) {
@@ -181,8 +181,11 @@ PHP_FUNCTION(object_dump)
 		return;
 	}
 
+#if PHP_VERSION_ID >= 80000
+	table = Z_OBJ_HANDLER_P(object, get_properties)(Z_OBJ_P(object));
+#else
 	table = Z_OBJ_HANDLER_P(object, get_properties)(object);
-	
+#endif
 	if (!table) {
 		return;
 	}

@@ -134,6 +134,7 @@ PHP_FUNCTION(func_get_return_type)
 			case MAY_BE_ARRAY:
 				RETURN_STRING(zend_get_type_by_const(IS_ARRAY));
 			case MAY_BE_NULL:
+			case MAY_BE_VOID:
 				RETURN_STRING("void");
 			
 			default:
@@ -200,6 +201,10 @@ PHP_FUNCTION(object_dump)
 
 		zend_unmangle_property_name_ex(k, &class_name, &prop_name, &prop_name_len);
 
+		if (Z_TYPE_P(v) == IS_INDIRECT) {
+			v = Z_INDIRECT_P(v);
+		}
+			
 		if (class_name) {
 			if (class_name[0] == '*') {
 				if (zend_hash_str_add(Z_ARRVAL_P(return_value), prop_name, prop_name_len, v)) {

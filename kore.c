@@ -125,7 +125,7 @@ PHP_FUNCTION(func_get_return_type)
 	if (ZEND_TYPE_IS_ONLY_MASK(info->type)) {
 		switch (ZEND_TYPE_PURE_MASK(info->type)) {
 			
-			case MAY_BE_STR:
+			case MAY_BE_STRING:
 				RETURN_STRING(zend_get_type_by_const(IS_STRING));
 			case MAY_BE_LONG:
 				RETURN_STRING(zend_get_type_by_const(IS_LONG));

@@ -141,7 +141,7 @@ PHP_FUNCTION(func_get_return_type)
 		}
 		
 	}
-1
+
 	RETURN_STR_COPY(ZEND_TYPE_NAME(info->type));
 #elif PHP_VERSION_ID >= 70200
 	if (!ZEND_TYPE_IS_CLASS(info->type)) {
